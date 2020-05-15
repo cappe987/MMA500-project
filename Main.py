@@ -17,6 +17,29 @@ class Game:
         print(self.board[i][j], end="")
       print()
 
+
+  def minimax(self, x, y, boardcopy):
+
+    # Undo any changes on board.
+    return 0
+
+  def doBestMove(self):
+    if (self.turn == 'X'):
+      # valueboard = self.board.copy()
+      bestI = 0
+      bestJ = 0
+      maxValue = 0
+      for i in range(self.size):
+        for j in range(self.size):
+          newMax = max(maxValue, self.minimax(i, j, self.board))
+          if (newMax > maxValue):
+            bestI = i
+            bestJ = j
+      pass
+    elif (self.turn == "O"):
+      pass
+
+
   def playGame(self):
     while(True):
       if(self.turn == 'X'):
