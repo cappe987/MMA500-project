@@ -6,6 +6,7 @@ class Game:
     self.board = []
     self.size = size
     self.turn = 'X'
+    self.moves = 0
 
     for i in range(size):
       self.board.append([])
@@ -55,7 +56,7 @@ class Game:
     return random.randrange(-5, 6)
 
   def minimax(self, x, y, depth, alpha, beta, player):
-    if (depth == 0): # Or game over
+    if (depth == 0 or self.moves == self.size*self.size): # Or game over
       return self.staticEvaluation(x, y)
     
     if player == 'X':
@@ -63,10 +64,12 @@ class Game:
       for i in range(self.size):
         for j in range(self.size):
           if (self.board[i][j] == ' '):
+            self.moves = self.moves + 1
             self.board[i][j] = 'X'
             value = self.minimax(i, j, depth - 1, alpha, beta, 'O')
             print(value)
             self.board[i][j] = ' '
+            self.moves = self.moves - 1
             maxEval = max(maxEval, value)
             alpha = max(alpha, value)
             if beta <= alpha:
@@ -81,9 +84,11 @@ class Game:
         for j in range(self.size):
           if (self.board[i][j] == ' '):
             self.board[i][j] = 'O'
+            self.moves = self.moves + 1
             value = self.minimax(i, j, depth - 1, alpha, beta, 'X')
             print(value)
             self.board[i][j] = ' '
+            self.moves = self.moves - 1
             minEval = min(minEval, value)
             beta = min(beta, value)
             if beta <= alpha:
@@ -117,6 +122,7 @@ class Game:
       print("Placing X in position " + str(bestI) + ":" + str(bestJ))
       self.board[bestI][bestJ] = "X"
       self.turn = 'O'
+      self.moves = self.moves + 1
         
     elif (self.turn == "O"):
       bestI = 0
@@ -135,6 +141,7 @@ class Game:
       print("Placing O in position " + str(bestI) + ":" + str(bestJ))
       self.board[bestI][bestJ] = "O"
       self.turn = 'X'
+      self.moves = self.moves + 1
 
   def botPlay(self):
     for _ in range(4):
