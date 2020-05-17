@@ -1,12 +1,19 @@
 
 import random
+import enum
+
+class PlayerType(enum.Enum):
+  Human = True
+  AI = False
 
 class Game:
-  def __init__(self, size):
+  def __init__(self, size, p1, p2):
     self.board = []
     self.size = size
     self.turn = 'X'
     self.moves = 0
+    self.p1 = p1
+    self.p2 = p2
 
     for i in range(size):
       self.board.append([])
@@ -38,7 +45,6 @@ class Game:
         print("\\/", end="")
       print()
       # print("\n---------------")
-
 
   
 #   /\
@@ -143,38 +149,43 @@ class Game:
       self.turn = 'X'
       self.moves = self.moves + 1
 
-  def botPlay(self):
-    for _ in range(4):
-      self.doBestMove()
-    
-    self.printBoard()
-
-
   def playGame(self):
-    while(True):
-      if(self.turn == 'X'):
-        print("Player X")
-        x = int(input("Input x: "))
-        y = int(input("Input y: "))
-        self.board[x][y] = "X"
-        self.turn = "O"
-
-      elif(self.turn == 'O'):
-        print("Player O")
-        x = int(input("Input x: "))
-        y = int(input("Input y: "))
-        self.board[x][y] = "O"
-        self.turn = "X"
-
+    while self.moves != self.size*self.size:
+      if self.turn == 'X':
+        if self.p1 == PlayerType.Human:
+          self.humanInput()
+        else:
+          self.doBestMove()
+      else:
+        if self.p2 == PlayerType.Human:
+          self.humanInput()
+        else:
+          self.doBestMove()
       self.printBoard()
 
 
+  def humanInput(self):
+    if(self.turn == 'X'):
+      print("Player X")
+      x = int(input("Input x: "))
+      y = int(input("Input y: "))
+      self.board[x][y] = "X"
+      self.turn = "O"
 
-game = Game(2)
+    elif(self.turn == 'O'):
+      print("Player O")
+      x = int(input("Input x: "))
+      y = int(input("Input y: "))
+      self.board[x][y] = "O"
+      self.turn = "X"
+
+
+
+game = Game(4, PlayerType.AI, PlayerType.AI)
+
 game.printBoard()
 
-game.botPlay()
-# game.playGame()
+game.playGame()
 
 
 
