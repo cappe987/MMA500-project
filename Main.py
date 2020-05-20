@@ -89,7 +89,8 @@ class Game:
 
 
   def botPlay(self):
-    for _ in range(16):
+    for _ in range(self.size*self.size):
+    # while True:
       self.doBestMove()
       self.printBoard()
       a = input("Press enter to continue")
@@ -112,7 +113,7 @@ class Game:
 
 
 
-game = Game(4, PlayerType.AI, PlayerType.AI)
+game = Game(7, PlayerType.Human, PlayerType.AI)
 
 game.printBoard()
 
@@ -120,6 +121,7 @@ game.printBoard()
 game.botPlay()
 
 
+# Keep track of paths for humans. 
 
 
 

@@ -69,8 +69,8 @@ class AI:
   def staticEvaluation(self, player, x_paths, o_paths):
     if (player == 'X'):
       # valueboard = self.board.copy()
-      print("X:")
-      print(x_paths)
+      # print("X:")
+      # print(x_paths)
       bestI = 0
       bestJ = 0
       maxValue = -999
@@ -83,15 +83,15 @@ class AI:
               bestI = i
               bestJ = j
               maxValue = newMax
-              print(newMax)
-              print("BestI: " + str(bestI))
-              print("BestJ: " + str(bestJ))
+              # print(newMax)
+              # print("BestI: " + str(bestI))
+              # print("BestJ: " + str(bestJ))
         
       return (bestI, bestJ, maxValue)
 
     elif (player == "O"):
-      print("O:")
-      print(o_paths)
+      # print("O:")
+      # print(o_paths)
       bestI = 0
       bestJ = 0
       maxValue = -999
@@ -104,9 +104,9 @@ class AI:
               bestI = i
               bestJ = j
               maxValue = newMax
-              print(newMax)
-              print("BestI: " + str(bestI))
-              print("BestJ: " + str(bestJ))
+              # print(newMax)
+              # print("BestI: " + str(bestI))
+              # print("BestJ: " + str(bestJ))
       
       return (bestI, bestJ, -maxValue) 
 
@@ -181,8 +181,8 @@ class AI:
 
             if value > maxEval:
               maxEval = value
-              bestI = i2
-              bestJ = j2
+              bestI = i
+              bestJ = j
               
             alpha = max(alpha, value)
             if beta <= alpha:
@@ -211,8 +211,8 @@ class AI:
 
             if value < minEval:
               minEval = value
-              bestI = i2
-              bestJ = j2
+              bestI = i
+              bestJ = j
 
             beta = min(beta, value)
             if beta <= alpha:
@@ -232,9 +232,9 @@ class AI:
     self.otherpaths = otherpaths
 
     if self.symbol == "X":
-      (bestI, bestJ, _) = self.minimax(1, -999, 999, self.paths, otherpaths, "X")
+      (bestI, bestJ, _) = self.minimax(3, -999, 999, self.paths, otherpaths, "X")
     else:
-      (bestI, bestJ, _) = self.minimax(1, -999, 999, otherpaths, self.paths, "O")
+      (bestI, bestJ, _) = self.minimax(3, -999, 999, otherpaths, self.paths, "O")
     
     self.paths = self.mergePaths(bestI, bestJ, self.paths)
 
