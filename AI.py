@@ -20,15 +20,15 @@ class AI:
     
     return newls
 
-  def getDiagonals(self, x, y):
-    # ls = [(x-2, y-1), (x-2, y+1), (x+2, y-1), (x+2, y+1)]
-    ls = [(x-1, y-2), (x-2, y-1), (x-1,y+1), (x+1, y+2), (x+2, y+1), (x+1, y-1)]
-    newls = []
-    for (i,j) in ls:
-      if i >= 0 and i < self.size and j >= 0 and j < self.size:
-        newls.append((i,j))
+  # def getDiagonals(self, x, y):
+  #   # ls = [(x-2, y-1), (x-2, y+1), (x+2, y-1), (x+2, y+1)]
+  #   ls = [(x-1, y-2), (x-2, y-1), (x-1,y+1), (x+1, y+2), (x+2, y+1), (x+1, y-1)]
+  #   newls = []
+  #   for (i,j) in ls:
+  #     if i >= 0 and i < self.size and j >= 0 and j < self.size:
+  #       newls.append((i,j))
     
-    return newls
+  #   return newls
 
   def findPathLength(self, player, path):
     if player == 'X':
@@ -252,8 +252,7 @@ if __name__ == "__main__":
 
   # xs = [[(1,1), (2,2)], [(4,4)]]
   # print(ai.mergePaths(1,2, xs)) # Merge with 1
-  xs = [[(1,1), (0,0)]]
-  print(ai.staticEvaluation)
+  # xs = [[(1,1), (0,0)]]
   # print(ai.getNeighbours(1,3))
   # print(ai.mergePaths(3,3, [[(1,1), (2,2)], [(4,4)]])) # Merge with 2
   # print(ai.mergePaths(7,7, [[(1,1), (2,2)], [(4,4)]])) # Create new path

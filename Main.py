@@ -125,6 +125,14 @@ game.botPlay()
 
 
 
+# ----- Project report ------
+# How the evaluation algorithm works (try to create a longer path)
+# ? What combinatorial games are
+# How a game tree works
+# How alpha-beta pruning works
+# How the code works
+
+
 
 
 
