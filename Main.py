@@ -16,8 +16,8 @@ class Game:
     self.p1 = p1
     self.p2 = p2
 
-    self.AI1 = AI(size)
-    self.AI2 = AI(size)
+    self.AI1 = AI(size, "X")
+    self.AI2 = AI(size, "O")
 
     for i in range(size):
       self.board.append([])
@@ -57,7 +57,7 @@ class Game:
 
   def doBestMove(self):
     if (self.turn == 'X'):
-      (bestI, bestJ) = self.AI1.doMove(self.board, self.moves, self.turn)
+      (bestI, bestJ) = self.AI1.doMove(self.board, self.moves, self.turn, self.AI2.paths)
       
       print("Placing X in position " + str(bestI) + ":" + str(bestJ))
       self.board[bestI][bestJ] = "X"
@@ -65,7 +65,7 @@ class Game:
       self.moves = self.moves + 1
         
     elif (self.turn == "O"):
-      (bestI, bestJ) = self.AI2.doMove(self.board, self.moves, self.turn)
+      (bestI, bestJ) = self.AI2.doMove(self.board, self.moves, self.turn, self.AI1.paths)
       
       print("Placing O in position " + str(bestI) + ":" + str(bestJ))
       self.board[bestI][bestJ] = "O"
@@ -89,10 +89,10 @@ class Game:
 
 
   def botPlay(self):
-    for _ in range(25):
+    for _ in range(16):
       self.doBestMove()
-    
-    self.printBoard()
+      self.printBoard()
+      a = input("Press enter to continue")
 
 
   def humanInput(self):
@@ -116,7 +116,8 @@ game = Game(4, PlayerType.AI, PlayerType.AI)
 
 game.printBoard()
 
-game.playGame()
+# game.playGame()
+game.botPlay()
 
 
 

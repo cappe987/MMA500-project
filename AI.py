@@ -4,9 +4,10 @@
 
 class AI:
 
-  def __init__(self, size):
+  def __init__(self, size, symbol):
     self.size = size
     self.paths = []
+    self.symbol = symbol
 
 
 
@@ -29,34 +30,113 @@ class AI:
     
     return newls
 
-  def findLongestPath(self, player):
-    # Find longest path for player.
-    return 0
+  def findPathLength(self, player, path):
+    if player == 'X':
+      # Left -> Right
+      lowest = 999
+      highest = -1
+      for (_,j) in path:
+        if j < lowest:
+          lowest = j
+        if j > highest:
+          highest = j
 
-  def staticEvaluation(self, x, y, player):
-    notPlayer = 'X' if player == 'O' else 'O'
-    val = 0
-    for (i,j) in self.getNeighbours(x, y):
-      if self.board[i][j] == player:
-        val = val + 1
-      elif self.board[i][j] == notPlayer:
-        val = val - 2
+      return highest - lowest + 1
 
-    # for (i,j) in self.getDiagonals(x,y):
+    else: 
+      # O: Up -> Down
+      lowest = 999
+      highest = -1
+      for (i,_) in path:
+        if i < lowest:
+          lowest = i
+        if i > highest:
+          highest = i
+
+      return highest - lowest + 1
+
+  def staticEvaluation(self, x, y, player, x_paths, o_paths):
+    # neighbours = self.getNeighbours(x, y)
+    paths_to_use = x_paths if player == "X" else o_paths
+
+    maxlen = 0
+    for xs in paths_to_use: #self.mergePaths(x,y, paths_to_use):
+      length = self.findPathLength(player, xs)
+      if length > maxlen:
+        maxlen = length
+    # for xs in paths_to_use:
+    #   for n in neighbours:
+    #     if n in xs:
+    #       length = self.findPathLength(player, [(x,y)] + xs) 
+    #       if length > maxlen:
+    #         maxlen = length
+
+    # if player == "X":
+    #   maxlen = 0
+    #   for xs in x_paths:
+    #     for n in neighbours:
+    #       if n in xs:
+    #         length = self.findPathLength(player, [(x,y)] + xs) 
+    #         if length > maxlen:
+    #           maxlen = length
+
+    #         # Neighbour found in list. We can connect to this path.
+    
+    # else:
+    #   maxlen = 0
+    #   for xs in o_paths:
+    #     for n in neighbours:
+    #       if n in xs:
+    #         length = self.findPathLength(player, [(x,y)] + xs) 
+    #         if length > maxlen:
+    #           maxlen = length
+    
+    return maxlen if player == "X" else -maxlen
+      # Opponents turn, use otherpaths
+
+  def mergePaths(self, i, j, path_orig):
+    paths = path_orig[:]
+    neighbours = self.getNeighbours(i, j)
+    # print(neighbours)
+    found = False
+    firstConnect = -1
+    for index in range(len(paths)):
+      for n in neighbours:
+        if n in paths[index]:
+          # Connected path found
+          paths[index] = [(i,j)] + paths[index]
+          if not found:
+            firstConnect = index
+          found = True
+          break
+
+    
+    # Merge paths
+    to_remove = []
+    for index2 in range(len(paths)):
+      # if index != index2 and (not set(paths[index]).isdisjoint(set(paths[index2]))):
+      if firstConnect != index2 and (i,j) in paths[index2]:
+        p = paths[index2]
+        paths[firstConnect] = list(set(paths[firstConnect]).union(p))
+        to_remove.append(p)
+
+    # Remove merged paths.
+    # for p in to_remove:
+      # paths.remove(p)  
+    paths = list(filter(lambda x: x not in to_remove, paths))
+
+    # Nothing connected. Create its own path
+    if not found:
+      # paths.append([(i,j)])
+      paths = [[(i,j)]] + paths
+    
+    return paths
 
 
-    return val if player == 'X' else -val
-    # Counts the score for the position.
-    # if x == 2 and y == 2:
-    #   return -5
-    # if player == 'X':
-    #   return random.randint(-5,5)
-    # return 0
-    # return random.randrange(-5, 6)
 
-  def minimax(self, x, y, depth, alpha, beta, player):
+  def minimax(self, x, y, depth, alpha, beta, x_paths, o_paths, player):
     if (depth == 0 or self.moves == self.size*self.size): # Or game over
-      return self.staticEvaluation(x, y, player)
+      return self.staticEvaluation(x, y, player, x_paths, o_paths)
     
     if player == 'X':
       maxEval = -999
@@ -65,7 +145,9 @@ class AI:
           if (self.board[i][j] == ' '):
             self.moves = self.moves + 1
             self.board[i][j] = 'X'
-            value = self.minimax(i, j, depth - 1, alpha, beta, 'O')
+            # Add (i,j) to paths as well
+            value = self.minimax(i, j, depth - 1, alpha, beta, 
+                      self.mergePaths(i,j,x_paths), o_paths, 'O')
             # print(value)
             # print("Depth: " + str(depth) + "| X: " + str(value))
             # print("Checking position: " + str(i) + " " + str(j))
@@ -86,7 +168,8 @@ class AI:
           if (self.board[i][j] == ' '):
             self.board[i][j] = 'O'
             self.moves = self.moves + 1
-            value = self.minimax(i, j, depth - 1, alpha, beta, 'X')
+            value = self.minimax(i, j, depth - 1, alpha, beta,
+                      x_paths, self.mergePaths(i,j, o_paths), 'X')
             # print(value)
             # print("X: " + str(i) + " | Y: " + str(j) + " | " + str(value))
             # print("Depth: " + str(depth) + " | O: " + str(value))
@@ -104,12 +187,16 @@ class AI:
     return 0
 
 
-  def doMove(self, board, moves, turn):
+  def doMove(self, board, moves, turn, otherpaths):
     self.board = board
     self.moves = moves
+    # self.my_turn = turn
+    self.otherpaths = otherpaths
 
-    if (turn == 'X'):
+    if (self.symbol == 'X'):
       # valueboard = self.board.copy()
+      print("X:")
+      print(self.paths)
       bestI = 0
       bestJ = 0
       maxValue = -999
@@ -117,15 +204,21 @@ class AI:
         for j in range(self.size):
           # Replace 0, 0 with alpha-beta values
           if self.board[i][j] == ' ':
-            newMax = max(maxValue, self.minimax(i, j, 0, -999, 999, turn)) 
+            newMax = max(maxValue, self.minimax(i, j, 0, -999, 999, 
+                      self.mergePaths(i, j, self.paths), otherpaths, turn)) 
             # print("Newmax: " + str(newMax))
             # print("maxValue: " + str(maxValue))
             if (newMax > maxValue):
               bestI = i
               bestJ = j
               maxValue = newMax
+              print(newMax)
+              print("BestI: " + str(bestI))
+              print("BestJ: " + str(bestJ))
         
-    elif (turn == "O"):
+    elif (self.symbol == "O"):
+      print("O:")
+      print(self.paths)
       bestI = 0
       bestJ = 0
       minValue = 999
@@ -133,7 +226,8 @@ class AI:
         for j in range(self.size):
           # Replace 0, 0 with alpha-beta values
           if self.board[i][j] == ' ':
-            newMin = min(minValue, self.minimax(i, j, 1, -999, 999, turn)) 
+            newMin = min(minValue, self.minimax(i, j, 1, -999, 999, otherpaths, 
+                        self.mergePaths(i, j, self.paths), turn)) 
             if (newMin < minValue):
               bestI = i
               bestJ = j
@@ -142,4 +236,33 @@ class AI:
               print("BestI: " + str(bestI))
               print("BestJ: " + str(bestJ))
       
+    self.paths = self.mergePaths(bestI, bestJ, self.paths)
     return (bestI, bestJ)
+
+
+
+
+if __name__ == "__main__":
+  ai = AI(10, "X")
+
+  # xs = [[(1,1), (2,2)], [(4,4)]]
+  # print(ai.mergePaths(1,2, xs)) # Merge with 1
+  xs = [[(1,1), (0,0)], [(1,3)]]
+  print(ai.mergePaths(1, 3, xs))
+  # print(ai.getNeighbours(1,3))
+  # print(ai.mergePaths(3,3, [[(1,1), (2,2)], [(4,4)]])) # Merge with 2
+  # print(ai.mergePaths(7,7, [[(1,1), (2,2)], [(4,4)]])) # Create new path
+  # print()
+
+  # print(ai.staticEvaluation(1,2, "X", [[(1,1), (2,2)], [(4,4)]], [])) # Merge with 1
+  # print(ai.staticEvaluation(3,3, "X", [[(1,1), (2,2)], [(4,4)]], [])) # Merge with 2
+  # print(ai.staticEvaluation(7,7, "X", [[(1,1), (2,2)], [(4,4)]], [])) # Create new path
+  print()
+
+  # print(ai.staticEvaluation(1,2, "O", [], [[(1,1), (2,2)], [(4,4)]])) # Merge with 1
+  # print(ai.staticEvaluation(3,3, "O", [], [[(1,1), (2,2)], [(4,4)]])) # Merge with 2
+  # print(ai.staticEvaluation(7,7, "O", [], [[(1,1), (2,2)], [(4,4)]])) # Create new path
+
+  # print(ai.findPathLength("X", [(2, 2), (4, 4), (3, 3), (1, 1)]))
+
+  # print(ai.staticEvaluation(1,2, ))
