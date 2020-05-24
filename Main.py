@@ -93,7 +93,7 @@ class Game:
     # while True:
       self.doBestMove()
       self.printBoard()
-      a = input("Press enter to continue")
+      input("Press enter to continue")
 
 
   def humanInput(self):
@@ -122,15 +122,10 @@ game.botPlay()
 
 
 # Keep track of paths for humans. 
+# Human play currently does not work and the PlayerType isn't used.
 
 
 
-# ----- Project report ------
-# How the evaluation algorithm works (try to create a longer path)
-# ? What combinatorial games are
-# How a game tree works
-# How alpha-beta pruning works
-# How the code works
 
 
 
