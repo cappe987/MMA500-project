@@ -20,7 +20,7 @@ class AI:
 
   def findPathLength(self, player, path):
     if player == 'X':
-      # Left -> Right
+      # X: Left -> Right
       lowest = 999
       highest = -1
       for (_,j) in path:
@@ -47,12 +47,12 @@ class AI:
     paths_to_use = x_paths if player == "X" else o_paths
 
     maxlen = 0
-    for xs in paths_to_use: #self.mergePaths(x,y, paths_to_use):
+    for xs in paths_to_use: 
       length = self.findPathLength(player, xs)
       if length > maxlen:
         maxlen = length
 
-    return maxlen #if player == "X" else -maxlen
+    return maxlen 
 
   def staticEvaluation(self, player, x_paths, o_paths):
     if (player == 'X'):
